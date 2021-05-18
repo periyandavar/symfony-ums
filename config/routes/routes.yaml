@@ -1,0 +1,3 @@
+app_index_welcome:
+    path: /welcome
+    controller: App\Controller\IndexController::welcome
