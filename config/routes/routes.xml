@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        https://symfony.com/schema/routing/routing-1.0.xsd">
+    <route id="xml-route" path="/xmls" 
+        controller="App\Controller\IndexController::xml"
+        methods="GET|POST">
+        <condition>
+            context.getMethod() in ['GET', 'HEAD'] and request.headers.get('User-Agent') matches '/firefox/i'
+        </condition>
+    </route>
+    <route id="xml-param" path="/xml/{param}"
+        controller="App\Controller\IndexController::param"
+        stateless="true">
+        <requirement key="param">\d+</requirement>
+        <default key="param">1</default>
+    </route>
+</routes>

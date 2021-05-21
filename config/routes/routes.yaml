@@ -1,3 +1,20 @@
 app_index_welcome:
     path: /welcome
     controller: App\Controller\IndexController::welcome
+route_yml:
+    path: /ymls
+    controller: App\Controller\IndexController::yml
+    methods: GET|POST
+route_yml_param:
+    path: /yml/{param}
+    controller: App\Controller\IndexController::param
+    requirements:
+        param: \d+
+    defaults:
+        param: 3
+    stateless: true
+route_redir:
+    path: /yml/redir
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'route_yml'
