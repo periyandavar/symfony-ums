@@ -16,6 +16,14 @@ class IndexController extends AbstractController
         return new Response($msg);
     }
 
+    /**
+     * @Route("/tmpl",name="temp_sample")
+     */
+    public function tmpl()
+    {
+        return $this->render("index/layout.html.twig", ["name" => "welcome"]);
+    }
+
     public function yml(Request $request): Response
     {
         return new Response('yml');
