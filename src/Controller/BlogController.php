@@ -39,4 +39,15 @@ class BlogController extends AbstractController
 
         return $this->render('blog/show.html.twig', ['post' => $post]);
     }
+
+    /**
+     * Lists all latest Posts.
+     *
+     * @Route("/latest", name="show_latest_blogs")
+     */
+    public function latest()
+    {
+        $posts = $this->getDoctrine()->getRepository(Post::class)->fetchLatestPost();
+        return $this->render('blog/list.html.twig', ['posts' => $posts]);
+    }
 }
