@@ -1,0 +1,3 @@
+{% for post in posts %}
+    {{ render(path('show_blog', {id: post})) }}
+{% endfor %}

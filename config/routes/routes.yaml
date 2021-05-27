@@ -5,6 +5,7 @@ route_yml:
     path: /ymls
     controller: App\Controller\IndexController::yml
     methods: GET|POST
+
 route_yml_param:
     path: /yml/{param}
     controller: App\Controller\IndexController::param
@@ -18,3 +19,8 @@ route_redir:
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'route_yml'
+route_render:
+    path: /render-route
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    defaults:
+        template: 'static/welcome.html.twig'

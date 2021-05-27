@@ -1,3 +1,39 @@
-div {
+/* div {
     border: solid 1px black;
+} */
+
+.form-div input {
+    width: 94%;
+    height: 38px;
+    padding: 17px;
+    margin: 17px;
+}
+
+.form-div {
+    margin: auto;
+    width: 60%;
+    padding: 12px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    color: #1d1b1b;
+    font-size: 24px;
+    font-family: sans-serif;
+    line-height: 35px;
+    background-color: dodgerblue;
+    border-radius: 12px;
+}
+
+.form-div button {
+    padding: 10px;
+    /* margin: 9px; */
+    font-size: 19px;
+    font-family: sans-serif;
+    border: 1px solid;
+    background-color: #0be979ad;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.button-div {
+    text-align: center;
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use Doctrine\DBAL\Driver\Connection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -49,5 +50,23 @@ class BlogController extends AbstractController
     {
         $posts = $this->getDoctrine()->getRepository(Post::class)->fetchLatestPost();
         return $this->render('blog/list.html.twig', ['posts' => $posts]);
+    }
+
+    /**
+     * @Route("/recent", name = "recent_article")
+     */
+    public function recent()
+    {
+        $posts = [1, 2, 4];
+        return $this->render("blog/recent.html.twig", ['posts' => $posts]);
+    }
+
+    /**
+     * @Route("/posts/all", name="all_posts")
+     */
+    public function AllPosts(Connection $connection)
+    {
+        $posts = $connection->fetchAll('Select title from post');
+        return $this->json($posts);
     }
 }

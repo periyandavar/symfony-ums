@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <link href="{{asset('css/style.css')}}" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div class="form-div">
+            <form method="POST" action="{{path('insert-record')}}">
+                Name <br> <input type="text" required name="name"/> <br>
+                Salary <br> <input type="number" required name="salary"/>
+                <div class="button-div">
+                    <button type="submit" name="btn">Sumbit</button>
+                </div>
+                {{msg is defined ? msg : ''}}
+            </form>
+        </div>
+    </body>
+</html>

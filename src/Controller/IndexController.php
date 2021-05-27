@@ -5,7 +5,9 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
+use Twig\Environment;
 
 class IndexController extends AbstractController
 {
@@ -24,9 +26,61 @@ class IndexController extends AbstractController
         return $this->render("index/layout.html.twig", ["name" => "welcome"]);
     }
 
-    public function yml(Request $request): Response
+    public function yml(Request $request, $twig): Response
     {
-        return new Response('yml');
+        return new Response($twig->render('index/temp.html.twig', ["str" => 'yml']));
+    }
+
+    /**
+     * @Route("ses", name = "sample_session")
+     *
+     */
+    public function ses(Request $request)
+    {
+        $sessName = $request->getSession()->get("value", null);
+        if ($sessName === null) {
+            return new Response("Session not set..!");
+        }
+        $msg = $request->getSession()->getFlashBag()->get("msg");
+        $info = $request->getSession()->getFlashBag()->get("info");
+        $msg = "Message : " . (array_key_exists(0, $msg) ? $msg[0] : null);
+        $info = "Info : " . (array_key_exists(0, $info) ? $info[0] : null);
+        $info .= "<br>Param : " . $this->getParameter("param.sample");
+        return new Response("Session value : " . $sessName . "<br>$msg<br>$info");
+    }
+    /**
+     * @Route("/json", name = "json_sample")
+     *
+     */
+    public function sampleJson()
+    {
+        return $this->json(["name" => "raja", "age" => 12]);
+    }
+    /**
+     * @Route("/download", name="download_file")
+     */
+    public function download()
+    {
+        return $this->file("img/symfony.png", "logo.png", ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+    /**
+     * @Route("ses/{value}", name = "set_session")
+     */
+    public function setSes(Request $request)
+    {
+        $value = $request->attributes->get("value");
+        $request->getSession()->set("value", $value);
+        $this->addFlash("info", "Flash Info...");
+        $request->getSession()->getFlashBag()->add("msg", "Flash Msg...");
+        return new Response("Session is set..!");
+    }
+
+    /**
+     * @Route("/epage", name="error_page_404")
+     */
+    public function errPage()
+    {
+        throw $this->createNotFoundException("404 Page");
     }
 
     /**
@@ -60,9 +114,9 @@ class IndexController extends AbstractController
     /**
      * @Route("/temp")
      */
-    public function temp(): Response
+    public function temp(Environment $twig): Response
     {
-        return $this->render('index/temp.html.twig', ["str" => 'template']);
+        return new Response($twig->render('index/temp.html.twig', ["str" => 'Injected Template']));
     }
 
     /**
@@ -71,6 +125,17 @@ class IndexController extends AbstractController
     public function sam()
     {
         return $this->render('index/temp.html.twig', ["str" => 'sample']);
+    }
+    /**
+     * @Route("/check/{name<.+>}")
+     */
+    public function checkTemplate(Environment $twig, $name)
+    {
+        $loader = $twig->getLoader();
+        if ($loader->exists($name)) {
+            return new Response("'$name' Exists");
+        }
+        return new Response("'$name' Not exists");
     }
 
     /**

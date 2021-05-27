@@ -1,4 +1,14 @@
 <html>
 <h1> You are in {{str}} page </h1>
 <p> go to <a href="{{ path('home_page', {user:'raja'})|escape('html')}}">home</a></p>
+<img src="{{asset('img/symfony.png')}}">
+<img src="{{ absolute_url(asset('img/symfony.png'))}}">
+App values <br>
+app.user {{app.user}} <br>
+app.request {{app.request}} <br>
+app.session {{app.session.get('value')}} <br>
+{# app.flashes {{app.flashes.get('value')}} <br> #}
+app.environment {{app.environment}} <br>
+app.debug {{app.debug}} <br>
+app.token {{app.token}} <br>
 </html>
