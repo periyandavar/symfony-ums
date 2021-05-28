@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <link href="{{asset('css/style.css')}}" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div class="form-div">
+            <form method="POST" enctype="multipart/form-data" action="{{path('upload-file')}}">
+                <input type="file" required name="pdf" accept=".pdf"/>
+                <div class="button-div">
+                    <button type="submit" name="btn">Sumbit</button>
+                </div>
+                {{msg is defined ? msg : ''}}<br>
+                {% if file is defined %}
+                    <a href="{{asset('uploads/'~file)}}">click me </a>
+                {% endif %}
+            </form>
+        </div>
+    </body>
+</html>

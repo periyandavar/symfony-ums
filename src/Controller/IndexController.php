@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
@@ -14,7 +14,8 @@ class IndexController extends AbstractController
     public function welcome(): Response
     {
         $url = $this->generateUrl('home_page', ['user' => 'raja']);
-        $msg = "welcome <br> go to <a href='" . $url . "'>home</a>";
+        $msg = "welcome <br> go to <a href='".$url."'>home</a>";
+
         return new Response($msg);
     }
 
@@ -23,56 +24,59 @@ class IndexController extends AbstractController
      */
     public function tmpl()
     {
-        return $this->render("index/layout.html.twig", ["name" => "welcome"]);
+        return $this->render('index/layout.html.twig', ['name' => 'welcome']);
     }
 
     public function yml(Request $request, $twig): Response
     {
-        return new Response($twig->render('index/temp.html.twig', ["str" => 'yml']));
+        return new Response($twig->render('index/temp.html.twig', ['str' => 'yml']));
     }
 
     /**
      * @Route("ses", name = "sample_session")
-     *
      */
     public function ses(Request $request)
     {
-        $sessName = $request->getSession()->get("value", null);
-        if ($sessName === null) {
-            return new Response("Session not set..!");
+        $sessName = $request->getSession()->get('value', null);
+        if (null === $sessName) {
+            return new Response('Session not set..!');
         }
-        $msg = $request->getSession()->getFlashBag()->get("msg");
-        $info = $request->getSession()->getFlashBag()->get("info");
-        $msg = "Message : " . (array_key_exists(0, $msg) ? $msg[0] : null);
-        $info = "Info : " . (array_key_exists(0, $info) ? $info[0] : null);
-        $info .= "<br>Param : " . $this->getParameter("param.sample");
-        return new Response("Session value : " . $sessName . "<br>$msg<br>$info");
+        $msg = $request->getSession()->getFlashBag()->get('msg');
+        $info = $request->getSession()->getFlashBag()->get('info');
+        $msg = 'Message : '.(array_key_exists(0, $msg) ? $msg[0] : null);
+        $info = 'Info : '.(array_key_exists(0, $info) ? $info[0] : null);
+        $info .= '<br>Param : '.$this->getParameter('param.sample');
+
+        return new Response('Session value : '.$sessName."<br>$msg<br>$info");
     }
+
     /**
      * @Route("/json", name = "json_sample")
-     *
      */
     public function sampleJson()
     {
-        return $this->json(["name" => "raja", "age" => 12]);
+        return $this->json(['name' => 'raja', 'age' => 12]);
     }
+
     /**
      * @Route("/download", name="download_file")
      */
     public function download()
     {
-        return $this->file("img/symfony.png", "logo.png", ResponseHeaderBag::DISPOSITION_INLINE);
+        return $this->file('img/symfony.png', 'logo.png', ResponseHeaderBag::DISPOSITION_INLINE);
     }
+
     /**
      * @Route("ses/{value}", name = "set_session")
      */
     public function setSes(Request $request)
     {
-        $value = $request->attributes->get("value");
-        $request->getSession()->set("value", $value);
-        $this->addFlash("info", "Flash Info...");
-        $request->getSession()->getFlashBag()->add("msg", "Flash Msg...");
-        return new Response("Session is set..!");
+        $value = $request->attributes->get('value');
+        $request->getSession()->set('value', $value);
+        $this->addFlash('info', 'Flash Info...');
+        $request->getSession()->getFlashBag()->add('msg', 'Flash Msg...');
+
+        return new Response('Session is set..!');
     }
 
     /**
@@ -80,7 +84,7 @@ class IndexController extends AbstractController
      */
     public function errPage()
     {
-        throw $this->createNotFoundException("404 Page");
+        throw $this->createNotFoundException('404 Page');
     }
 
     /**
@@ -97,9 +101,17 @@ class IndexController extends AbstractController
     public function param(Request $request)
     {
         $atr = $request->attributes->get('param');
+
         return new Response("Param caught..!<br> $atr");
     }
 
+    /**
+     * @Route("/global", name="global_values")
+     */
+    public function global()
+    {
+        return $this->render('index/global.html.twig');
+    }
 
     /**
      * @Route("/home", methods={"GET", "POST"}, name="home_page")//support only double quotes
@@ -107,7 +119,8 @@ class IndexController extends AbstractController
      */
     public function home(Request $request): Response
     {
-        $msg = "Welcome to home " . $request->query->get('user');
+        $msg = 'Welcome to home '.$request->query->get('user');
+
         return new Response($msg);
     }
 
@@ -116,7 +129,7 @@ class IndexController extends AbstractController
      */
     public function temp(Environment $twig): Response
     {
-        return new Response($twig->render('index/temp.html.twig', ["str" => 'Injected Template']));
+        return new Response($twig->render('index/temp.html.twig', ['str' => 'Injected Template']));
     }
 
     /**
@@ -124,8 +137,9 @@ class IndexController extends AbstractController
      */
     public function sam()
     {
-        return $this->render('index/temp.html.twig', ["str" => 'sample']);
+        return $this->render('index/temp.html.twig', ['str' => 'sample']);
     }
+
     /**
      * @Route("/check/{name<.+>}")
      */
@@ -135,7 +149,16 @@ class IndexController extends AbstractController
         if ($loader->exists($name)) {
             return new Response("'$name' Exists");
         }
+
         return new Response("'$name' Not exists");
+    }
+
+    /**
+     * @Route("/", name="home_page")
+     */
+    public function root()
+    {
+        return $this->forward('App\\Controller\\IndexController::global');
     }
 
     /**
@@ -145,12 +168,13 @@ class IndexController extends AbstractController
     {
         $res = dump($request);
         $user = $request->get('user');
-        return new Response("welcome " . $user);
+
+        return new Response('welcome '.$user);
     }
 
     public function xml(Request $request)
     {
-        return new Response("xml");
+        return new Response('xml');
     }
 
     public function php(Request $request)

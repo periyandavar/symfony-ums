@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EmployeeRepository")
@@ -31,6 +32,27 @@ class Employee
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $path;
+
+    /**
+     * @Assert\File(maxSize="6000000")
+     */
+    private $file;
+
+    public function upload(string $destination)
+    {
+        if (null === $this->file) {
+            return;
+        }
+
+        $this->file->move($destination, $this->file->getClientOriginalName());
+        $this->path = $this->file->getClientOriginalName();
+        $this->file = null;
+    }
 
     /**
      * @ORM\PrePersist
@@ -89,21 +111,61 @@ class Employee
     }
 
     /**
-     * Get the value of createdAt
-     */ 
+     * Get the value of createdAt.
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;
     }
 
     /**
-     * Set the value of createdAt
+     * Set the value of createdAt.
      *
-     * @return  self
-     */ 
+     * @return self
+     */
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of path.
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * Set the value of path.
+     *
+     * @return self
+     */
+    public function setPath($path)
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of file.
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * Set the value of file.
+     *
+     * @return self
+     */
+    public function setFile($file)
+    {
+        $this->file = $file;
 
         return $this;
     }

@@ -45,9 +45,12 @@ class EmployeeController extends AbstractController
     {
         $name = $request->request->get('name');
         $salary = $request->request->get('salary');
+        $file = $request->files->get('pdf');
         $employee = new Employee();
         $employee->setName($name);
         $employee->setSalary($salary);
+        $employee->setFile($file);
+        $employee->upload($this->getParameter('upload-dir'));
         $em = $this->getDoctrine()->getManager();
         $em->persist($employee);
         try {

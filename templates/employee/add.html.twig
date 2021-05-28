@@ -4,9 +4,10 @@
     </head>
     <body>
         <div class="form-div">
-            <form method="POST" action="{{path('insert-record')}}">
+            <form method="POST" enctype="multipart/form-data"  action="{{path('insert-record')}}">
                 Name <br> <input type="text" required name="name"/> <br>
                 Salary <br> <input type="number" required name="salary"/>
+                File <br> <input type="file" required name="pdf" accept=".pdf"/>
                 <div class="button-div">
                     <button type="submit" name="btn">Sumbit</button>
                 </div>
