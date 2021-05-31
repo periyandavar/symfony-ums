@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\MessageGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,9 +15,19 @@ class IndexController extends AbstractController
     public function welcome(): Response
     {
         $url = $this->generateUrl('home_page', ['user' => 'raja']);
-        $msg = "welcome <br> go to <a href='".$url."'>home</a>";
+        $msg = "welcome <br> go to <a href='" . $url . "'>home</a>";
 
         return new Response($msg);
+    }
+
+    public static function getSubscribedServices()
+    {
+        return array_merge(
+            parent::getSubscribedServices(),
+            [
+            'msgGenerator' => MessageGenerator::class,
+            ]
+        );
     }
 
     /**
@@ -43,11 +54,31 @@ class IndexController extends AbstractController
         }
         $msg = $request->getSession()->getFlashBag()->get('msg');
         $info = $request->getSession()->getFlashBag()->get('info');
-        $msg = 'Message : '.(array_key_exists(0, $msg) ? $msg[0] : null);
-        $info = 'Info : '.(array_key_exists(0, $info) ? $info[0] : null);
-        $info .= '<br>Param : '.$this->getParameter('param.sample');
+        $msg = 'Message : ' . (array_key_exists(0, $msg) ? $msg[0] : null);
+        $info = 'Info : ' . (array_key_exists(0, $info) ? $info[0] : null);
+        $info .= '<br>Param : ' . $this->getParameter('param.sample');
 
-        return new Response('Session value : '.$sessName."<br>$msg<br>$info");
+        return new Response('Session value : ' . $sessName . "<br>$msg<br>$info");
+    }
+
+    // /**
+    //  * @Route("/msg",name="random_message")
+    //  */
+    // public function messgae(MessageGenerator $generator)
+    // {
+    //     $message = $generator->generateMessage();
+    //     return new Response($message);
+    // }
+
+    /**
+     * @Route("/msg",name="random_message")
+     */
+    public function messgae()
+    {
+        $generator = $this->get('msgGenerator');
+        $message = $this->getParameter("samp-param") . " ";
+        $message .= $generator->generateMessage();
+        return new Response($message);
     }
 
     /**

@@ -6,6 +6,7 @@
 parameters:
     param.sample: 'param'
     upload-dir: '%kernel.project_dir%/public/uploads'
+    samp-param: '%env(lowercase:SAMP)%'
 
 services:
     # default configuration for services in *this* file
@@ -45,3 +46,8 @@ services:
     App\EventListener\DatabaseActivitySubscriber:
         tags:
             - { name: 'doctrine.event_subscriber'}
+    App\Service\MessageGenerator:
+        public: true
+        lazy: true
+    App\Processor\LowercasingEnvVarProcessor:
+        tags: ["container.env_var_processor"]
