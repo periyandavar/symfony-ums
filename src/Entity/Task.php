@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as Validate;
 
 /**
  * @ORM\Entity
@@ -20,6 +21,7 @@ class Task
     /**
      * @ORM\Column(type="string", length=25)
      * @Assert\NotBlank
+     * @Validate\ContainsAlphanumeric
      */
     protected $task;
     /**

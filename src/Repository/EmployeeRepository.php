@@ -24,4 +24,3 @@ class EmployeeRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult()[0];
     }
 }
-

@@ -25,7 +25,7 @@ class EmployeeControllerTest extends TestCase
         $objectManager->expects($this->once())
             ->method('getRepository')
             ->willReturn($empRepo);
-        
+
         $topSalary = (new EmployeeController($objectManager))->fetchTopSalary();
         $this->assertEquals($employee->getName(), $topSalary->getContent());
         // $this->assertEquals("Ram", $topSalary->getContent());

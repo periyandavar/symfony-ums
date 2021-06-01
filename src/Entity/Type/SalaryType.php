@@ -7,7 +7,7 @@ use Doctrine\DBAL\Types\Type;
 
 class SalaryType extends Type
 {
-    const SALARY = 'salary';
+    private const SALARY = 'salary';
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform)
     {
@@ -29,4 +29,3 @@ class SalaryType extends Type
         return ($value / 100);
     }
 }
-

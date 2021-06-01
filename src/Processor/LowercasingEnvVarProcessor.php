@@ -19,4 +19,3 @@ class LowercasingEnvVarProcessor implements EnvVarProcessorInterface
         ];
     }
 }
-
