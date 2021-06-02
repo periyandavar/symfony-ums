@@ -9,6 +9,7 @@ use App\Validator as Validate;
 /**
  * @ORM\Entity
  * @ORM\Table(name = "task")
+ * @Assert\GroupSequence({"Task", "register"})
  */
 class Task
 {
@@ -20,14 +21,16 @@ class Task
     protected $id;
     /**
      * @ORM\Column(type="string", length=25)
-     * @Assert\NotBlank
-     * @Validate\ContainsAlphanumeric
+     * @Assert\NotBlank(groups={"register"})
+     * @Validate\ContainsAlphanumeric(groups={"register"})
      */
     protected $task;
     /**
      * @ORM\Column(type="datetime")
-     * @Assert\NotBlank
-     * @Assert\Type(type="\DateTime")
+     * @Assert\Sequentially({
+     *      @Assert\NotBlank,
+     *      @Assert\Type(type="\DateTime")
+     * }, groups={"register"})
      */
     protected $dueDate;
 

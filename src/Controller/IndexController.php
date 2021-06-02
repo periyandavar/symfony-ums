@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Service\MessageGenerator;
+use App\Service\SessionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
@@ -46,12 +49,19 @@ class IndexController extends AbstractController
     /**
      * @Route("ses", name = "sample_session")
      */
-    public function ses(Request $request)
+    public function ses(Request $request, SessionService $sessionService)
     {
-        $sessName = $request->getSession()->get('value', null);
+        // $sessName = $request->getSession()->get('value', null);
+        ini_set('session.save_handler', 'files');
+        ini_set('session.save_path', '/tmp');
+        session_start();
+        $session = new Session(new PhpBridgeSessionStorage());
+        $session->start();
+        $sessName = $sessionService->getValue('value');
         if (null === $sessName) {
             return new Response('Session not set..!');
         }
+        $sessName .= "<br> action : " . $_SESSION['action']; //$sessionService->getValue('action'); //. $_SESSION['action'];
         $msg = $request->getSession()->getFlashBag()->get('msg');
         $info = $request->getSession()->getFlashBag()->get('info');
         $msg = 'Message : ' . (array_key_exists(0, $msg) ? $msg[0] : null);
@@ -100,12 +110,19 @@ class IndexController extends AbstractController
     /**
      * @Route("ses/{value}", name = "set_session")
      */
-    public function setSes(Request $request)
+    public function setSes(Request $request, SessionService $sessionService)
     {
         $value = $request->attributes->get('value');
-        $request->getSession()->set('value', $value);
+        ini_set('session.save_handler', 'files');
+        ini_set('session.save_path', '/tmp');
+        session_start();
+        $session = new Session(new PhpBridgeSessionStorage());
+        $session->start();
+        $sessionService->setValue('value', $value);
+        // $request->getSession()->set('value', $value);
         $this->addFlash('info', 'Flash Info...');
         $request->getSession()->getFlashBag()->add('msg', 'Flash Msg...');
+        $_SESSION['action'] = 'set';
 
         return new Response('Session is set..!');
     }

@@ -51,3 +51,18 @@ services:
         lazy: true
     App\Processor\LowercasingEnvVarProcessor:
         tags: ["container.env_var_processor"]
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        arguments:
+            - '%env(DATABASE_URL)%'
+            - {db_table: 'sessions'}
+    # App\Service\SessionService:
+    #     lazy: true
+    App\Session\EncryptedSessionProxy:
+        arguments:
+            $handler: '@Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler'
+            $key: '@defuse.crypto.key'
+    defuse.crypto.key:
+        class: Defuse\Crypto\Key
+        factory: ['Defuse\Crypto\Key', 'loadFromAsciiSafeString']
+        arguments:
+            $saved_key_string: '%env(DEFUSE_KEY)%'

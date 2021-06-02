@@ -12,7 +12,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EmployeeController extends AbstractController
 {
-
     private $objectManager;
 
     public function __construct(ObjectManager $objectManager)
