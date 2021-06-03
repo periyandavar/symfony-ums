@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Post;
 use App\Service\MessageGenerator;
 use App\Service\SessionService;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,10 +13,21 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Twig\Environment;
 
 class IndexController extends AbstractController
 {
+
+    private $msgGenerator;
+
+    /**
+     * @required
+     */
+    public Environment $twig;
+
     public function welcome(): Response
     {
         $url = $this->generateUrl('home_page', ['user' => 'raja']);
@@ -33,6 +46,19 @@ class IndexController extends AbstractController
         );
     }
 
+    public function __construct(Environment $twig)
+    {
+        # code...
+    }
+
+    /**
+     * @required
+     */
+    public function setMsgGenerator(MessageGenerator $msgGenerator)
+    {
+        $this->msgGenerator = $msgGenerator;
+    }
+
     /**
      * @Route("/tmpl",name="temp_sample")
      */
@@ -49,9 +75,10 @@ class IndexController extends AbstractController
     /**
      * @Route("ses", name = "sample_session")
      */
-    public function ses(Request $request, SessionService $sessionService)
+    public function ses(Request $request, SessionService $sessionService, LoggerInterface $sampleLogger)
     {
         // $sessName = $request->getSession()->get('value', null);
+        $sampleLogger->info("Request to retrive session");
         ini_set('session.save_handler', 'files');
         ini_set('session.save_path', '/tmp');
         session_start();
@@ -81,15 +108,43 @@ class IndexController extends AbstractController
     // }
 
     /**
-     * @Route("/msg",name="random_message")
+     * @Route("/msg/{value?}",name="random_message")
      */
     public function messgae()
     {
-        $generator = $this->get('msgGenerator');
-        $message = $this->getParameter("samp-param") . " ";
-        $message .= $generator->generateMessage();
-        return new Response($message);
+        $message = $this->msgGenerator->generateMessage();
+        return new Response($this->twig->render('index/temp.html.twig', ['str' => $message]));
     }
+
+    /**
+     * @Route("/serialize")
+     */
+    public function serialize(SerializerInterface $serializer)
+    {
+        $data = <<<EOF
+        <post>
+            <title>foo</title>
+            <body>99</body>
+        </post>
+        EOF;
+        // $post = new Post();
+        // $post->setTitle("welcome");
+        // $post->setBody("Simple Welcome message..!");
+        $post = $serializer->deserialize($data, Post::class, 'xml');
+        $data = $serializer->serialize($post, 'json');
+        return $this->render('index/serialize.html.twig', ["post" => $data]);
+    }
+
+    // /**
+    //  * @Route("/msg",name="random_message")
+    //  */
+    // public function messgae()
+    // {
+    //     $generator = $this->get('msgGenerator');
+    //     $message = $this->getParameter("samp-param") . " ";
+    //     $message .= $generator->generateMessage();
+    //     return new Response($message);
+    // }
 
     /**
      * @Route("/json", name = "json_sample")

@@ -36,7 +36,8 @@ services:
     App\Controller\IndexController:
         tags: ['controller.service_arguments']
         bind:
-            $twig: '@twig'
+            $twig: '@?twig'
+            $msgGenerator: '@message.generator'
     App\Controller\EmployeeController:
         arguments:
             $objectManager: '@doctrine.orm.default_entity_manager'
@@ -46,9 +47,14 @@ services:
     App\EventListener\DatabaseActivitySubscriber:
         tags:
             - { name: 'doctrine.event_subscriber'}
-    App\Service\MessageGenerator:
+    message.generator:
         public: true
-        lazy: true
+        # lazy: true
+        alias: App\Service\MessageGenerator
+        # deprecated:
+        #     package: 'App\Service\MessageGenerator'
+        #     version: 1.0
+            # message: 'The %alias_id% alias is deprecated. Do not use it any more';
     App\Processor\LowercasingEnvVarProcessor:
         tags: ["container.env_var_processor"]
     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
@@ -66,3 +72,6 @@ services:
         factory: ['Defuse\Crypto\Key', 'loadFromAsciiSafeString']
         arguments:
             $saved_key_string: '%env(DEFUSE_KEY)%'
+    get_set_method_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
+        tags: [serializer.normalizer]
