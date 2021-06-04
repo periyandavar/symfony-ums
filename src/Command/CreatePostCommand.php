@@ -7,12 +7,13 @@ use App\Validator\ContainsAlphanumeric;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class CreateUserCommand extends Command
+class CreatePostCommand extends Command
 {
     protected static $defaultName = 'app:create-post';
 
@@ -37,16 +38,18 @@ class CreateUserCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $section = $output->section();
+        // $section = $output->section();
+        $command = $this->getApplication()->find('hello:world');
+        $command->run(new ArrayInput([]), $output);
         $output->writeln(['Create new post', '============', '']);
-        $section->writeln('Ohhh...');
-        $section->writeln('The post is created successfully..!');
-        $section->clear();
+        // $section->writeln('Ohhh...');
+        // $section->writeln('The post is created successfully..!');
+        // $section->clear();
         $constraints = new ContainsAlphanumeric();
         $erros = $this->validator->validate($input->getArgument('body'), $constraints);
         if (count($erros) !== 0) {
-            $section->writeln('Ohhh...');
-            $section->writeln('Invalid post body contents');
+            $output->writeln('Ohhh...');
+            $output->writeln('Invalid post body contents');
             return Command::FAILURE;
         }
         $post = new Post();
@@ -56,13 +59,13 @@ class CreateUserCommand extends Command
         try {
             $this->entityManager->flush();
         } catch (ORMException $e) {
-            $section->writeln('Ohhh...');
-            $section->writeln('unabel to add the post');
+            $output->writeln('Ohhh...');
+            $output->writeln('unabel to add the post');
 
             return Command::FAILURE;
         }
-        $section->writeln('Ohhh...');
-        $section->writeln('The post '.$input->getArgument('title').' is created successfully..!');
+        $output->writeln('Ohhh...');
+        $output->writeln('The post '.$input->getArgument('title').' is created successfully..!');
 
         return Command::SUCCESS;
     }

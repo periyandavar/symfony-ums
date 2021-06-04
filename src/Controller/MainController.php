@@ -3,6 +3,10 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -27,6 +31,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends AbstractController
@@ -41,6 +46,25 @@ class MainController extends AbstractController
         return $this->render('main/index.html.twig', [
             'controller_name' => 'MainController',
         ]);
+    }
+
+    /**
+     * Returns console command output hello:world
+     *
+     * @Route("/console")
+     *
+     * @param KernelInterface $kernel
+     * @return Response
+     */
+    public function console(KernelInterface $kernel): Response
+    {
+        $app = new Application($kernel);
+        $app->setAutoExit(false);
+        $input = new ArrayInput(['command' => 'hello:world']);
+        $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
+        $app->run($input, $output);
+        $content = $output->fetch();
+        return new Response($content);
     }
 
     /**

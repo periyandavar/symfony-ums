@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Serializer\PostNormalizer;
+use App\Serializer\PostSerializer;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Serializer\YamlEncoder;
 
 class BlogController extends AbstractController
 {
@@ -22,6 +25,50 @@ class BlogController extends AbstractController
             ->findAll();
 
         return $this->render('blog/list.html.twig', ['posts' => $posts]);
+    }
+
+    /**
+     * Sends the encoded formt of posts
+     *
+     * @Route("/encode", name="yaml_encoder")
+     * @param YamlEncoder $yamlEncoder
+     * @return Response
+     */
+    public function encode(YamlEncoder $yamlEncoder, PostNormalizer $postNormalizer, PostSerializer $serializer): Response
+    {
+        $post = $this->getDoctrine()->getManager()->getRepository(Post::class)
+            ->findAll()[0];
+        // dump($post);
+        // $yaml = $postNormalizer->normalize($post, Post::class);
+        // dump($yaml);
+        // $yaml = $yamlEncoder->encode($yaml, 'yaml');
+        // dump($yaml);
+        $yaml = $serializer->serialize($post);
+        // return $this->render('blog/list.html.twig', ['posts' => $posts]);
+        return new Response("<html><body><pre>"  . $yaml . "</pre></html></body>");
+    }
+
+    /**
+     * Decodes the data
+     *
+     * @Route("/decode", name="yaml_deocoder")
+     *
+     * @param YamlEncoder $yamlEncoder
+     * @return Response
+     */
+    public function decode(YamlEncoder $yamlEncoder, PostNormalizer $postNormalizer, PostSerializer $serializer): Response
+    {
+        $data = <<<EOT
+        id: 1
+        title: Bird
+        body: This is a bird
+        EOT;
+        // $yaml = $yamlEncoder->decode($data, 'yaml');
+        // dump($yaml);
+        // $yaml = $postNormalizer->denormalize($yaml, Post::class);
+        $yaml = $serializer->deserialize($data, Post::class, 'yaml');
+        dump($yaml);
+        return new Response("<html><body> </html></body>");
     }
 
     /**

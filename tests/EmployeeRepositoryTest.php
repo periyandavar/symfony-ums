@@ -19,7 +19,7 @@ class EmployeeRepositoryTest extends KernelTestCase
     public function testFindTopSalary()
     {
         $result = $this->entityManager->getRepository(Employee::class)->findTopSalary();
-        $this->assertSame("as", $result->getName());
+        $this->assertSame("jan", $result->getName());
     }
 
     protected function tearDown(): void
