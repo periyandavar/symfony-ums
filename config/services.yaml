@@ -75,3 +75,10 @@ services:
     get_set_method_normalizer:
         class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
         tags: [serializer.normalizer]
+    # App\EventListener\ViewListener:
+    #     tags:
+    #         - { name: kernel.event_listener, event: kernel.view }
+    cutsom.onview.listener:
+        class: App\EventListener\ViewListener
+        tags:
+            - {  name: kernel.event_listener, event: kernel.view }

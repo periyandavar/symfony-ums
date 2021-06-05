@@ -49,6 +49,17 @@ class MainController extends AbstractController
     }
 
     /**
+     * Simple action method returning string instead of Response
+     *
+     * @Route("/event")
+     *
+     */
+    public function event()
+    {
+        return "checking on view listener";
+    }
+
+    /**
      * Returns console command output hello:world
      *
      * @Route("/console")

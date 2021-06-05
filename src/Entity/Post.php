@@ -38,6 +38,11 @@ class Post
     private $updatedAt;
 
     /**
+     * @ORM\Column(type = "string", length=15)
+     */
+    private $status;
+
+    /**
      * Get the value of id.
      */
     public function getId()
@@ -121,6 +126,26 @@ class Post
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of status.
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set the value of status.
+     *
+     * @return self
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
 
         return $this;
     }
