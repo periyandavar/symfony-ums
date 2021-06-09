@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -49,23 +49,19 @@ class MainController extends AbstractController
     }
 
     /**
-     * Simple action method returning string instead of Response
+     * Simple action method returning string instead of Response.
      *
      * @Route("/event")
-     *
      */
     public function event()
     {
-        return "checking on view listener";
+        return 'checking on view listener';
     }
 
     /**
-     * Returns console command output hello:world
+     * Returns console command output hello:world.
      *
      * @Route("/console")
-     *
-     * @param KernelInterface $kernel
-     * @return Response
      */
     public function console(KernelInterface $kernel): Response
     {
@@ -75,6 +71,7 @@ class MainController extends AbstractController
         $output = new BufferedOutput(OutputInterface::VERBOSITY_NORMAL, true);
         $app->run($input, $output);
         $content = $output->fetch();
+
         return new Response($content);
     }
 
@@ -94,19 +91,19 @@ class MainController extends AbstractController
             ->add('body', TextareaType::class)
             ->add('Email', EmailType::class)
             ->add('Height', IntegerType::class)
-            ->add('Salary', MoneyType::class, ["currency" => "INR", "grouping" => true])
+            ->add('Salary', MoneyType::class, ['currency' => 'INR', 'grouping' => true])
             ->add('ID_No', NumberType::class)
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
-                "invalid_message" => "The passwords should match",
-                "options" => [ "attr" => ["class" => 'password-field']],
-                "first_options" => ["label" => "Password"],
-                "second_options" => ["label" => "Confirm password"]
+                'invalid_message' => 'The passwords should match',
+                'options' => ['attr' => ['class' => 'password-field']],
+                'first_options' => ['label' => 'Password'],
+                'second_options' => ['label' => 'Confirm password'],
             ])
             ->add('Percentage', PercentType::class)
-            ->add("Blog", UrlType::class)
-            ->add("Range", RangeType::class, [
-                "attr" => [ "min" => 5, "max" => 25 ]
+            ->add('Blog', UrlType::class)
+            ->add('Range', RangeType::class, [
+                'attr' => ['min' => 5, 'max' => 25],
             ])
             // ->add("Tele_Nos", CollectionType::class, [
             //     "entry_type" => TelType::class,
@@ -114,28 +111,28 @@ class MainController extends AbstractController
             //     // "allow_add" => true,
             //     // "allow_delete" => true
             // ])
-            ->add("Gener", ChoiceType::class, [
-                "choices" => [
-                    "Male" => 1,
-                    "Female" => 2,
-                    "Not to Say" => 0
-                ]
+            ->add('Gener', ChoiceType::class, [
+                'choices' => [
+                    'Male' => 1,
+                    'Female' => 2,
+                    'Not to Say' => 0,
+                ],
             ])
             ->add('publishedAt', DateType::class, [
                 'widget' => 'choice',
             ])
             ->add('EventDuaration', DateIntervalType::class, [
-                'widget'      => 'integer',
-                'with_years'  => false,
+                'widget' => 'integer',
+                'with_years' => false,
                 'with_months' => false,
-                'with_days'   => true,
-                'with_hours'  => true,
+                'with_days' => true,
+                'with_hours' => true,
             ])
-            ->add("color", ColorType::class)
+            ->add('color', ColorType::class)
             ->add('birthdate', BirthdayType::class, [
                 'placeholder' => 'Select a value',
             ])
-            ->add("Confirm", RadioType::class, [
+            ->add('Confirm', RadioType::class, [
             ])
             ->add('reset', ButtonType::class, [
                 'attr' => ['class' => 'button'],
@@ -159,6 +156,24 @@ class MainController extends AbstractController
                 'attr' => ['class' => 'submit'],
             ])
             ->getForm();
-        return $this->render("main\\form.html.twig", ['form' => $form->createView()]);
+
+        return $this->render('main\\form.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * @Route("/sform")
+     */
+    public function sform(Request $request)
+    {
+        $form = $this->createFormBuilder()
+            ->add('emails', CollectionType::class, [
+                'entry_type' => EmailType::class,
+                'allow_add' => true,
+                'entry_options' => [
+                    'attr' => ['class' => 'email-box'],
+                ],
+            ])
+            ->getForm();
+        return $this->render('main\\simple.html.twig', ['form' => $form->createView()]);
     }
 }
