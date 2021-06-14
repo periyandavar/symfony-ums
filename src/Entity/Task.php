@@ -61,4 +61,9 @@ class Task
     {
         return $this->id;
     }
+
+    public function getWebPath()
+    {
+        return "img/symfony.png";
+    }
 }
