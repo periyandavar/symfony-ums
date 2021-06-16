@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Post;
 use App\Service\MessageGenerator;
 use App\Service\SessionService;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,15 +13,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Twig\Environment;
 
 class IndexController extends AbstractController
 {
-
     private $msgGenerator;
 
     /**
@@ -31,7 +32,7 @@ class IndexController extends AbstractController
     public function welcome(): Response
     {
         $url = $this->generateUrl('home_page', ['user' => 'raja']);
-        $msg = "welcome <br> go to <a href='" . $url . "'>home</a>";
+        $msg = "welcome <br> go to <a href='".$url."'>home</a>";
 
         return new Response($msg);
     }
@@ -48,7 +49,7 @@ class IndexController extends AbstractController
 
     public function __construct(Environment $twig)
     {
-        # code...
+        // code...
     }
 
     /**
@@ -78,7 +79,7 @@ class IndexController extends AbstractController
     public function ses(Request $request, SessionService $sessionService, LoggerInterface $sampleLogger)
     {
         // $sessName = $request->getSession()->get('value', null);
-        $sampleLogger->info("Request to retrive session");
+        $sampleLogger->info('Request to retrive session');
         ini_set('session.save_handler', 'files');
         ini_set('session.save_path', '/tmp');
         session_start();
@@ -88,14 +89,14 @@ class IndexController extends AbstractController
         if (null === $sessName) {
             return new Response('Session not set..!');
         }
-        $sessName .= "<br> action : " . $_SESSION['action']; //$sessionService->getValue('action'); //. $_SESSION['action'];
+        $sessName .= '<br> action : '.$_SESSION['action']; //$sessionService->getValue('action'); //. $_SESSION['action'];
         $msg = $request->getSession()->getFlashBag()->get('msg');
         $info = $request->getSession()->getFlashBag()->get('info');
-        $msg = 'Message : ' . (array_key_exists(0, $msg) ? $msg[0] : null);
-        $info = 'Info : ' . (array_key_exists(0, $info) ? $info[0] : null);
-        $info .= '<br>Param : ' . $this->getParameter('param.sample');
+        $msg = 'Message : '.(array_key_exists(0, $msg) ? $msg[0] : null);
+        $info = 'Info : '.(array_key_exists(0, $info) ? $info[0] : null);
+        $info .= '<br>Param : '.$this->getParameter('param.sample');
 
-        return new Response('Session value : ' . $sessName . "<br>$msg<br>$info");
+        return new Response('Session value : '.$sessName."<br>$msg<br>$info");
     }
 
     // /**
@@ -113,6 +114,7 @@ class IndexController extends AbstractController
     public function messgae()
     {
         $message = $this->msgGenerator->generateMessage();
+
         return new Response($this->twig->render('index/temp.html.twig', ['str' => $message]));
     }
 
@@ -132,7 +134,8 @@ class IndexController extends AbstractController
         // $post->setBody("Simple Welcome message..!");
         $post = $serializer->deserialize($data, Post::class, 'xml');
         $data = $serializer->serialize($post, 'json');
-        return $this->render('index/serialize.html.twig', ["post" => $data]);
+
+        return $this->render('index/serialize.html.twig', ['post' => $data]);
     }
 
     // /**
@@ -160,6 +163,45 @@ class IndexController extends AbstractController
     public function download()
     {
         return $this->file('img/symfony.png', 'logo.png', ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+
+    // /**
+    //  * @Route("/email")
+    //  */
+    // public function sendEmail(MailerInterface $mailer): Response
+    // {
+    //     $email = (new Email())
+    //         ->from('hello@example.com')
+    //         ->to('you@example.com')
+    //         //->cc('cc@example.com')
+    //         //->bcc('bcc@example.com')
+    //         //->replyTo('fabien@example.com')
+    //         //->priority(Email::PRIORITY_HIGH)
+    //         ->subject('Time for Symfony Mailer!')
+    //         ->text('Sending emails is fun again!')
+    //         ->html('<p>See Twig integration for better HTML integration!</p>');
+
+    //     try {
+    //         $mailer->send($email);
+
+    //         return new Response('sent');
+    //     } catch (Exception $e) {
+    //         dump($e);
+
+    //         return new Response('<html><body>err</body></html>');
+    //     }
+    // }
+
+    /**
+     * @Route("/mime")
+     *
+     * @return Response
+     */
+    public function mime(MimeTypesInterface $mTypes)
+    {
+        $value = $mTypes->guessMimeType('../../logo.png');
+
+        return new Response($value);
     }
 
     /**

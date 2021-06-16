@@ -63,6 +63,8 @@ services:
             - {db_table: 'sessions'}
     # App\Service\SessionService:
     #     lazy: true
+    App\Mime\SomeMimeTypeGuesser:
+        tags: ["mime.mime_type_guesser"]
     App\Session\EncryptedSessionProxy:
         arguments:
             $handler: '@Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler'
