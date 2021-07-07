@@ -15,41 +15,24 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class RecordController extends AbstractController
 {
-    // /**
-    //  * @Route("/", name="all_records",  methods={"GET"})
-    //  */
-    // public function index(RecordRepository $recordRepository): Response
-    // {
-    //     return $this->json($recordRepository->findActive());
-    // }
-
-    /**
-     * @Route("/", name="all_records", methods={"GET"})
-     */
-    public function index(RecordRepository $recordRepository): Response
-    {
-        return $this->json($recordRepository->findActive());
-    }
-
-    //  /**
-    //  * @Route("/", name="all_recor3ds", methods={"POST"})
-    //  */
-    // public function index3(RecordRepository $recordRepository): Response
-    // {
-    //     return $this->json($recordRepository->findAll());
-    // }
-
     /**
      * @Route("/", name="all_records", methods = {"POST"})
      */
     public function insert(Request $request): Response
     {
         $record = new Record();
-        $response = ['error' => false,'result' => ''];
+        $response = ['error' => false, 'result' => ''];
+        $data = json_decode($request->getContent(), true);
+        if (null !== $data) {
+            $request->request->replace($data);
+        }
+        if (!$request) {
+            return $this->json(['message' => 'Please provide a valid request!']);
+        }
         $em = $this->getDoctrine()->getManager();
-        $record->setFname($request->get("fname"));
-        $record->setLname($request->get("lname"));
-        $record->setDescription($request->get("description"));
+        $record->setFname($request->get('fname'));
+        $record->setLname($request->get('lname'));
+        $record->setDescription($request->get('description'));
         $em->persist($record);
         try {
             $em->flush();
@@ -60,6 +43,14 @@ class RecordController extends AbstractController
         }
 
         return $this->json($response);
+    }
+
+    /**
+     * @Route("/", name="new_record", methods={"GET"})
+     */
+    public function index(RecordRepository $recordRepository): Response
+    {
+        return $this->json($recordRepository->findActive());
     }
 
     /**
@@ -79,7 +70,7 @@ class RecordController extends AbstractController
      */
     public function delete(Record $record): Response
     {
-        $response = ['error' => false,'result' => ''];
+        $response = ['error' => false, 'result' => ''];
         $em = $this->getDoctrine()->getManager();
         $record->setIsDeleted(true);
         $em->persist($record);
@@ -101,7 +92,7 @@ class RecordController extends AbstractController
      */
     public function update(Request $request, RecordRepository $recordRepository): Response
     {
-        $response = ['error' => false,'result' => ''];
+        $response = ['error' => false, 'result' => ''];
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent());
         $record = $recordRepository->find($data->id);
